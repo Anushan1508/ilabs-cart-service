@@ -25,6 +25,7 @@ public class CartController {
 
     @PostMapping("/removetocart")
     public ResponseEntity<RemoveCartResponse> removeToCart(@RequestBody RemoveCartRequest removeCartRequest){
+        System.out.println("removeCartRequest = " + removeCartRequest);
         return ResponseEntity.ok(cartService.removeToCart(removeCartRequest));
     }
 }
