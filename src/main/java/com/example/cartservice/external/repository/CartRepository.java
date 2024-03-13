@@ -13,5 +13,5 @@ public interface CartRepository extends JpaRepository<CardEntity, Long> {
     @Transactional
     @Modifying
     @Query("DELETE FROM CardEntity c WHERE c.cartItem = :item")
-    void deleteByCartItem(@Param("item") String item);
+    int  deleteByCartItem(@Param("item") String item);
 }

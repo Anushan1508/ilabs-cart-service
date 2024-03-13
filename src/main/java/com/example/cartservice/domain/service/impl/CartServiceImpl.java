@@ -73,9 +73,14 @@ public class CartServiceImpl implements CartService {
         RemoveCartResponse removeCartResponse = new RemoveCartResponse();
         removeCartResponse.setResponseId(removeCartRequest.getRequestId());
         try {
-            cartRepository.deleteByCartItem(removeCartRequest.getItem());
-            removeCartResponse.setResultCode("200");
-            removeCartResponse.setResultDesc("Item removed from cart successfully");
+            int deletedRows = cartRepository.deleteByCartItem(removeCartRequest.getItem());
+            if (deletedRows > 0) {
+                removeCartResponse.setResultCode("200");
+                removeCartResponse.setResultDesc("Item removed from cart successfully");
+            } else {
+                removeCartResponse.setResultCode("404");
+                removeCartResponse.setResultDesc("Item not found in cart");
+            }
         } catch (Exception e) {
             removeCartResponse.setResultCode("401");
             removeCartResponse.setResultDesc("Exception occurred while removing item from cart");
