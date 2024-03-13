@@ -44,26 +44,30 @@ public class CartServiceImpl implements CartService {
         HttpEntity<AddCartItemServiceRequest> addCartItemServiceRequestHttpEntity = new HttpEntity<>(addCartItemServiceRequest);
         CardEntity cardEntity = new CardEntity();
         cardEntity.setCartItem(addCartRequest.getItem());
-        ResponseEntity<AddCartItemServiceResponse> addCartItemServiceResponseResponseEntity = this.sslRestTemplate
-                .exchange(
-                        itemServiceUrl,
-                        HttpMethod.POST,
-                        addCartItemServiceRequestHttpEntity,
-                        AddCartItemServiceResponse.class
-                );
-        if (Objects.nonNull(addCartItemServiceResponseResponseEntity.getBody()) && addCartItemServiceResponseResponseEntity.getBody().getResultCode().equals("200")) {
-            try {
-                cartRepository.save(cardEntity);
-                addCartResponse.setResultCode("200");
-                addCartResponse.setResultDesc("Item added to cart successfully");
-            } catch (Exception e) {
-                addCartResponse.setResultCode("401");
-                addCartResponse.setResultDesc("Exception occurred while adding item to cart");
-                e.printStackTrace();
+        try {
+            ResponseEntity<AddCartItemServiceResponse> addCartItemServiceResponseResponseEntity = this.sslRestTemplate
+                    .exchange(
+                            itemServiceUrl,
+                            HttpMethod.POST,
+                            addCartItemServiceRequestHttpEntity,
+                            AddCartItemServiceResponse.class
+                    );
+            if (Objects.nonNull(addCartItemServiceResponseResponseEntity.getBody()) && addCartItemServiceResponseResponseEntity.getBody().getResultCode().equals("200")) {
+                try {
+                        cartRepository.save(cardEntity);
+                        addCartResponse.setResultCode("200");
+                        addCartResponse.setResultDesc("Item added to cart successfully");
+                } catch (Exception e) {
+                    addCartResponse.setResultCode("401");
+                    addCartResponse.setResultDesc("Exception occurred while adding item to cart");
+                }
+            } else {
+                addCartResponse.setResultCode("400");
+                addCartResponse.setResultDesc("Item not added to list");
             }
-        } else {
-            addCartResponse.setResultCode("400");
-            addCartResponse.setResultDesc("Item not added to cart");
+        } catch (Exception e) {
+            addCartResponse.setResultCode("402");
+            addCartResponse.setResultDesc("Exception occurred while adding item to cart");
         }
         return addCartResponse;
     }
@@ -84,7 +88,6 @@ public class CartServiceImpl implements CartService {
         } catch (Exception e) {
             removeCartResponse.setResultCode("401");
             removeCartResponse.setResultDesc("Exception occurred while removing item from cart");
-            e.printStackTrace();
         }
         return removeCartResponse;
     }
